@@ -1,0 +1,3 @@
+Fui recomendado a usar o session provider por conta do componentes client side
+mas vou voltar no futuro para ver se realmente é necessario ou se posso manter toda a 
+logica de permissao de acessar o conteudo pelo middleware

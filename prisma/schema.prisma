@@ -1,0 +1,201 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// NextAuth.js Models
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+    @@map("accounts")
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("sessions")
+}
+
+model User {
+    id            String    @id @default(cuid())
+    name          String?
+    email         String?   @unique
+    emailVerified DateTime?
+    image         String?
+    password      String?
+    accounts      Account[]
+    sessions      Session[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("users")
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+    @@map("verification_tokens")
+}
+
+// Application Models
+
+model Athlete {
+    id        Int      @id @default(autoincrement())
+    name      String   @db.VarChar(255)
+    age       Int?
+    photo     String?
+    createdAt DateTime @default(now()) @map("created_at")
+
+    notes           AthleteNote[]
+    trainings       Training[]
+    personalRecords PersonalRecord[]
+    goals           Goal[]
+
+    @@map("athletes")
+}
+
+model AthleteNote {
+    id        Int    @id @default(autoincrement())
+    athleteId Int    @map("athlete_id")
+    desc      String
+
+    athlete Athlete @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+    @@map("athletes_notes")
+}
+
+model Sport {
+    id   Int    @id @default(autoincrement())
+    name String @db.VarChar(255)
+
+    trainingModels     TrainingModel[]
+    trainings          Training[]
+    performanceMetrics PerformanceMetric[]
+
+    @@map("sports")
+}
+
+model TrainingModel {
+    id          Int     @id @default(autoincrement())
+    name        String  @db.VarChar(255)
+    description String? @db.Text
+    sportId     Int     @map("sport_id")
+    data        Json?   @db.JsonB
+
+    sport     Sport      @relation(fields: [sportId], references: [id], onDelete: Cascade)
+    trainings Training[]
+
+    @@map("training_models")
+}
+
+model Training {
+    id        Int      @id @default(autoincrement())
+    userId    Int      @map("user_id")
+    date      DateTime
+    notes     String?  @db.Text
+    modelId   Int?     @map("model_id")
+    sportId   Int      @map("sport_id")
+    data      Json?    @db.JsonB
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    athlete         Athlete          @relation(fields: [userId], references: [id], onDelete: Cascade)
+    model           TrainingModel?   @relation(fields: [modelId], references: [id], onDelete: SetNull)
+    sport           Sport            @relation(fields: [sportId], references: [id], onDelete: Cascade)
+    personalRecords PersonalRecord[]
+
+    @@map("trainings")
+}
+
+model PerformanceMetric {
+    id          Int    @id @default(autoincrement())
+    name        String @db.VarChar(255)
+    sportId     Int?   @map("sport_id")
+    valueType   String @map("value_type") @db.VarChar(50)
+    defaultUnit String @map("default_unit") @db.VarChar(20)
+
+    sport           Sport?           @relation(fields: [sportId], references: [id], onDelete: SetNull)
+    personalRecords PersonalRecord[]
+    goals           Goal[]
+
+    @@map("performance_metrics")
+}
+
+model PersonalRecord {
+    id                  Int      @id @default(autoincrement())
+    athleteId           Int      @map("athlete_id")
+    performanceMetricId Int      @map("performance_metric_id")
+    value               Decimal  @db.Decimal(10, 2)
+    unit                String   @db.VarChar(20)
+    dateAchieved        DateTime @map("date_achieved") @db.Date
+    trainingId          Int?     @map("training_id")
+    notes               String?  @db.Text
+    createdAt           DateTime @default(now()) @map("created_at")
+
+    athlete           Athlete           @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+    performanceMetric PerformanceMetric @relation(fields: [performanceMetricId], references: [id], onDelete: Cascade)
+    training          Training?         @relation(fields: [trainingId], references: [id], onDelete: SetNull)
+
+    @@map("personal_records")
+}
+
+model Goal {
+    id                  Int       @id @default(autoincrement())
+    athleteId           Int       @map("athlete_id")
+    performanceMetricId Int       @map("performance_metric_id")
+    startValue          Decimal?  @map("start_value") @db.Decimal(10, 2)
+    targetValue         Decimal   @map("target_value") @db.Decimal(10, 2)
+    unit                String    @db.VarChar(20)
+    startDate           DateTime  @map("start_date") @db.Date
+    targetDate          DateTime? @map("target_date") @db.Date
+    status              String    @db.VarChar(20)
+    createdAt           DateTime  @default(now()) @map("created_at")
+    updatedAt           DateTime  @updatedAt @map("updated_at")
+
+    athlete           Athlete           @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+    performanceMetric PerformanceMetric @relation(fields: [performanceMetricId], references: [id], onDelete: Cascade)
+    goalHistory       GoalHistory[]
+
+    @@map("goals")
+}
+
+model GoalHistory {
+    id           Int      @id @default(autoincrement())
+    goalId       Int      @map("goal_id")
+    dateRecorded DateTime @default(now()) @map("date_recorded")
+    currentValue Decimal  @map("current_value") @db.Decimal(10, 2)
+    notes        String?  @db.Text
+
+    goal Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+    @@map("goal_history")
+}

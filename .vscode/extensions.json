@@ -1,0 +1,51 @@
+{
+  "recommendations": [
+    // Prisma
+    "prisma.prisma",
+
+    // Next.js e React
+    "dsznajder.es7-react-js-snippets",
+    "burkeholland.simple-react-snippets",
+
+    // TypeScript
+    "ms-vscode.vscode-typescript-next",
+
+    // Formatação e Linting
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+
+    // Tailwind CSS (caso queira adicionar futuramente)
+    "bradlc.vscode-tailwindcss",
+
+    // Git
+    "eamodio.gitlens",
+    "mhutchie.git-graph",
+
+    // Produtividade
+    "christian-kohler.path-intellisense",
+    "zignd.html-css-class-completion",
+    "formulahendry.auto-rename-tag",
+    "formulahendry.auto-close-tag",
+
+    // Ícones
+    "pkief.material-icon-theme",
+
+    // Banco de Dados
+    "mtxr.sqltools",
+    "mtxr.sqltools-driver-pg",
+
+    // Material UI (já que você está usando)
+    "vscodeshift.mui-snippets",
+
+    // ENV
+    "mikestead.dotenv",
+
+    // YAML (para configurações)
+    "redhat.vscode-yaml",
+
+    // GitHub Copilot (opcional, mas útil)
+    "github.copilot",
+    "github.copilot-chat"
+  ],
+  "unwantedRecommendations": []
+}
