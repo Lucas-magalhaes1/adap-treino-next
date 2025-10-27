@@ -1,0 +1,13 @@
+{
+  "copilot.advanced": {
+    "debug.overrideChatModel": false,
+    "debug.testingMessage": false,
+    "debug.skipSystemPrompt": false
+  },
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": true,
+    "markdown": true
+  },
+  "github.copilot.chat.localeOverride": "pt-BR"
+}

@@ -1,3 +1,4 @@
+import { auth } from '@/lib/auth'
 import EmotionCacheProvider from '@/providers/EmotionCacheProvider'
 import ThemeMuiProvider from '@/providers/ThemeMuiProvider'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter'
@@ -5,8 +6,6 @@ import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import type { Metadata } from 'next'
 import { SessionProvider } from 'next-auth/react'
 import { Roboto } from 'next/font/google'
-import { auth } from './api/auth/[...nextauth]/route'
-import './globals.css'
 
 const roboto = Roboto({
   subsets: ['latin'],
