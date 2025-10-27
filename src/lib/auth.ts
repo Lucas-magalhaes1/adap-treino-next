@@ -33,7 +33,7 @@ export const { handlers, auth } = NextAuth({
           throw new Error('Credenciais inválidas')
         }
 
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
+        const isPasswordValid = bcrypt.compare(credentials.password, user.password)
 
         if (!isPasswordValid) {
           throw new Error('Credenciais inválidas')

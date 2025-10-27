@@ -1,6 +1,7 @@
 import { auth } from '@/lib/auth'
 import EmotionCacheProvider from '@/providers/EmotionCacheProvider'
 import ThemeMuiProvider from '@/providers/ThemeMuiProvider'
+import { CssBaseline } from '@mui/material'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter'
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import type { Metadata } from 'next'
@@ -28,13 +29,16 @@ export default async function RootLayout({
   const session = await auth()
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={roboto.variable}>
         <SessionProvider session={session}>
           <EmotionCacheProvider>
             <InitColorSchemeScript attribute="class" />
             <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-              <ThemeMuiProvider>{children}</ThemeMuiProvider>
+              <ThemeMuiProvider>
+                <CssBaseline />
+                {children}
+              </ThemeMuiProvider>
             </AppRouterCacheProvider>
           </EmotionCacheProvider>
         </SessionProvider>

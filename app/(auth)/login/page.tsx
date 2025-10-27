@@ -211,21 +211,6 @@ export default function LoginPage() {
             </Button>
           </Stack>
         </Box>
-
-        {/* Footer Info */}
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{
-              textAlign: 'center',
-              fontSize: { xs: '0.7rem', sm: '0.75rem' },
-              lineHeight: 1.4,
-            }}
-          >
-            Este é um aplicativo privado de acesso restrito
-          </Typography>
-        </Box>
       </Card>
     </Box>
   )
