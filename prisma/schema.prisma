@@ -6,9 +6,7 @@ generator client {
 }
 
 datasource db {
-    provider  = "postgresql"
-    url       = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
+    provider = "postgresql"
 }
 
 // NextAuth.js Models
@@ -70,16 +68,21 @@ model VerificationToken {
 // Application Models
 
 model Athlete {
-    id        Int      @id @default(autoincrement())
-    name      String   @db.VarChar(255)
-    age       Int?
+    id        Int       @id @default(autoincrement())
+    name      String    @db.VarChar(255)
+    gender    String?   @db.VarChar(20)
+    birthDate DateTime? @map("birth_date") @db.Date
+    weight    Decimal?  @db.Decimal(5, 2)
+    height    Decimal?  @db.Decimal(5, 2)
     photo     String?
-    createdAt DateTime @default(now()) @map("created_at")
+    notes     String?   @db.Text
+    createdAt DateTime  @default(now()) @map("created_at")
 
-    notes           AthleteNote[]
+    noteEntries     AthleteNote[]
     trainings       Training[]
     personalRecords PersonalRecord[]
     goals           Goal[]
+    sports          AthleteSport[]
 
     @@map("athletes")
 }
@@ -101,21 +104,71 @@ model Sport {
     trainingModels     TrainingModel[]
     trainings          Training[]
     performanceMetrics PerformanceMetric[]
+    athletes           AthleteSport[]
 
     @@map("sports")
 }
 
-model TrainingModel {
-    id          Int     @id @default(autoincrement())
-    name        String  @db.VarChar(255)
-    description String? @db.Text
-    sportId     Int     @map("sport_id")
-    data        Json?   @db.JsonB
+// --- Tabela de relação Many-to-Many entre Atletas e Esportes ---
+model AthleteSport {
+    athleteId Int      @map("athlete_id")
+    sportId   Int      @map("sport_id")
+    isMain    Boolean  @default(false) @map("is_main")
+    createdAt DateTime @default(now()) @map("created_at")
 
-    sport     Sport      @relation(fields: [sportId], references: [id], onDelete: Cascade)
+    athlete Athlete @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+    sport   Sport   @relation(fields: [sportId], references: [id], onDelete: Cascade)
+
+    @@id([athleteId, sportId])
+    @@map("athlete_sports")
+}
+
+model TrainingModel {
+    id          Int      @id @default(autoincrement())
+    name        String   @db.VarChar(255)
+    description String?  @db.Text
+    sportId     Int      @map("sport_id")
+    config      Json?    @db.JsonB
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @updatedAt @map("updated_at")
+
+    sport     Sport                @relation(fields: [sportId], references: [id], onDelete: Cascade)
     trainings Training[]
+    fields    TrainingModelField[]
 
     @@map("training_models")
+}
+
+// --- Tabela de Campos Dinâmicos com Histórico ---
+model TrainingModelField {
+    id              Int @id @default(autoincrement())
+    trainingModelId Int @map("training_model_id")
+
+    // Identificadores
+    key   String @db.VarChar(100)
+    label String @db.VarChar(255)
+
+    // Tipagem para validação e renderização
+    fieldType String  @db.VarChar(50)
+    unit      String? @db.VarChar(20)
+
+    // Controle de ordem e apresentação
+    sortOrder Int   @default(0) @map("sort_order")
+    config    Json? @db.JsonB
+
+    // Controle de histórico
+    isActive  Boolean   @default(true) @map("is_active")
+    deletedAt DateTime? @map("deleted_at")
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    trainingModel TrainingModel @relation(fields: [trainingModelId], references: [id], onDelete: Cascade)
+
+    @@unique([trainingModelId, key])
+    @@index([trainingModelId, isActive])
+    @@index([trainingModelId, deletedAt])
+    @@map("training_model_fields")
 }
 
 model Training {
@@ -154,7 +207,8 @@ model PerformanceMetric {
 model PersonalRecord {
     id                  Int      @id @default(autoincrement())
     athleteId           Int      @map("athlete_id")
-    performanceMetricId Int      @map("performance_metric_id")
+    performanceMetricId Int?     @map("performance_metric_id")
+    title               String   @db.VarChar(255)
     value               Decimal  @db.Decimal(10, 2)
     unit                String   @db.VarChar(20)
     dateAchieved        DateTime @map("date_achieved") @db.Date
@@ -162,9 +216,9 @@ model PersonalRecord {
     notes               String?  @db.Text
     createdAt           DateTime @default(now()) @map("created_at")
 
-    athlete           Athlete           @relation(fields: [athleteId], references: [id], onDelete: Cascade)
-    performanceMetric PerformanceMetric @relation(fields: [performanceMetricId], references: [id], onDelete: Cascade)
-    training          Training?         @relation(fields: [trainingId], references: [id], onDelete: SetNull)
+    athlete           Athlete            @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+    performanceMetric PerformanceMetric? @relation(fields: [performanceMetricId], references: [id], onDelete: Cascade)
+    training          Training?          @relation(fields: [trainingId], references: [id], onDelete: SetNull)
 
     @@map("personal_records")
 }
@@ -172,18 +226,20 @@ model PersonalRecord {
 model Goal {
     id                  Int       @id @default(autoincrement())
     athleteId           Int       @map("athlete_id")
-    performanceMetricId Int       @map("performance_metric_id")
+    performanceMetricId Int?      @map("performance_metric_id")
+    title               String    @db.VarChar(255)
     startValue          Decimal?  @map("start_value") @db.Decimal(10, 2)
     targetValue         Decimal   @map("target_value") @db.Decimal(10, 2)
     unit                String    @db.VarChar(20)
     startDate           DateTime  @map("start_date") @db.Date
     targetDate          DateTime? @map("target_date") @db.Date
-    status              String    @db.VarChar(20)
+    strategyNotes       String?   @map("strategy_notes") @db.Text
+    status              String    @default("active") @db.VarChar(20)
     createdAt           DateTime  @default(now()) @map("created_at")
     updatedAt           DateTime  @updatedAt @map("updated_at")
 
-    athlete           Athlete           @relation(fields: [athleteId], references: [id], onDelete: Cascade)
-    performanceMetric PerformanceMetric @relation(fields: [performanceMetricId], references: [id], onDelete: Cascade)
+    athlete           Athlete            @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+    performanceMetric PerformanceMetric? @relation(fields: [performanceMetricId], references: [id], onDelete: SetNull)
     goalHistory       GoalHistory[]
 
     @@map("goals")
