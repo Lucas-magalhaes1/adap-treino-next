@@ -1,0 +1,43 @@
+/* Estilos para Vaul Drawer */
+[vaul-drawer] {
+  touch-action: none;
+  will-change: transform;
+}
+
+[vaul-drawer][vaul-drawer-visible='true'][vaul-drawer-direction='bottom'] {
+  transform: translate3d(0, 100%, 0);
+}
+
+[vaul-overlay] {
+  opacity: 0;
+  transition: opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+[vaul-overlay][vaul-drawer-visible='true'] {
+  opacity: 1;
+}
+
+[vaul-drawer]::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  background: inherit;
+  background-color: inherit;
+  left: 0;
+  right: 0;
+  height: 200%;
+}
+
+/* Animação de entrada suave */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+[vaul-drawer][vaul-drawer-visible='true'] {
+  animation: slideUp 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+}
