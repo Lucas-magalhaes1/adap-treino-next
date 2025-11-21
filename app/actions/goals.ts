@@ -15,6 +15,48 @@ function toNumber(value: Prisma.Decimal | number | null | undefined) {
 
 const GOALS_PATH = (athleteId: number) => `/dashboard/athletes/${athleteId}/goals`
 
+export async function getAthleteGoals(athleteId: number) {
+  try {
+    const goals = await prisma.goal.findMany({
+      where: { athleteId },
+      include: {
+        performanceMetric: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        goalHistory: {
+          orderBy: { dateRecorded: 'desc' },
+          take: 1,
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return goals.map((goal) => {
+      const lastEntry = goal.goalHistory[0]
+      const currentValue = lastEntry ? toNumber(lastEntry.currentValue) : toNumber(goal.startValue)
+
+      return {
+        id: goal.id,
+        title: goal.title,
+        status: goal.status as GoalStatus,
+        performanceMetric: goal.performanceMetric?.name,
+        startValue: toNumber(goal.startValue),
+        targetValue: toNumber(goal.targetValue),
+        currentValue,
+        unit: goal.unit,
+        targetDate: goal.targetDate?.toISOString() ?? null,
+        startDate: goal.startDate.toISOString(),
+      }
+    })
+  } catch (error) {
+    console.error('Erro ao buscar metas do atleta', error)
+    return []
+  }
+}
+
 export async function getAthleteGoalsDashboard(athleteId: number) {
   try {
     const athlete = await prisma.athlete.findUnique({
