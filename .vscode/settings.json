@@ -39,8 +39,6 @@
     "**/.vercel": true
   },
   "search.exclude": {
-    "**/node_modules": true,
-    "**/.next": true,
     "**/out": true,
     "**/.vercel": true,
     "**/yarn.lock": true,
