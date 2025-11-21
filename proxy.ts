@@ -2,7 +2,7 @@ import { auth } from '@/lib/auth'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const session = await auth()
   const isLoggedIn = !!session?.user
   const isDashboardRoute = request.nextUrl.pathname.startsWith('/dashboard')
@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
 
   // Proteger rotas do dashboard
   if (isDashboardRoute && !isLoggedIn) {
-    return NextResponse.redirect(new URL('/auth/login', request.url))
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 
   // Redirecionar usuário logado tentando acessar auth para dashboard
@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
     if (isLoggedIn) {
       return NextResponse.redirect(new URL('/dashboard/trainings', request.url))
     } else {
-      return NextResponse.redirect(new URL('/auth/login', request.url))
+      return NextResponse.redirect(new URL('/login', request.url))
     }
   }
 
