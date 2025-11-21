@@ -1,12 +1,14 @@
+import { AppMaxWidthContainer } from '@/components/layout/AppMaxWidthContainer'
 import { auth } from '@/lib/auth'
 import EmotionCacheProvider from '@/providers/EmotionCacheProvider'
 import ThemeMuiProvider from '@/providers/ThemeMuiProvider'
-import { CssBaseline } from '@mui/material'
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter'
+import '@/styles/vaul.css'
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import type { Metadata } from 'next'
 import { SessionProvider } from 'next-auth/react'
 import { Roboto } from 'next/font/google'
+import { Toaster } from 'sonner'
 
 const roboto = Roboto({
   subsets: ['latin'],
@@ -34,10 +36,10 @@ export default async function RootLayout({
         <SessionProvider session={session}>
           <EmotionCacheProvider>
             <InitColorSchemeScript attribute="class" />
-            <AppRouterCacheProvider options={{ enableCssLayer: true }}>
+            <AppRouterCacheProvider options={{ enableCssLayer: true, key: 'mui' }}>
               <ThemeMuiProvider>
-                <CssBaseline />
-                {children}
+                <AppMaxWidthContainer maxWidth="md">{children}</AppMaxWidthContainer>
+                <Toaster position="bottom-center" richColors closeButton />
               </ThemeMuiProvider>
             </AppRouterCacheProvider>
           </EmotionCacheProvider>
