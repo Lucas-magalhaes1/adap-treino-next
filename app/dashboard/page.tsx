@@ -1,7 +1,5 @@
-'use client'
-
-import { redirect } from 'next/navigation'
+import { DashboardScreen } from '@/components/screens/dashboard/DashboardScreen'
 
 export default function DashboardHome() {
-  redirect('/dashboard/trainings')
+  return <DashboardScreen />
 }
