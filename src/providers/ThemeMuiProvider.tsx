@@ -1,18 +1,15 @@
 // ThemeProvider.tsx - Configurar no provider
 'use client'
 
-import { DarkModeProvider } from '@/theme/DarkModeContext'
 import theme from '@/theme/theme'
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import React from 'react'
 
 export default function ThemeMuiProvider({ children }: { children: React.ReactNode }) {
   return (
-    <DarkModeProvider>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        {children}
-      </ThemeProvider>
-    </DarkModeProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      {children}
+    </ThemeProvider>
   )
 }

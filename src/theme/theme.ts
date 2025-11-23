@@ -5,7 +5,7 @@ import breakpoints from './breakpoints'
 import { customShadows, typography } from './core'
 import { COMMON, GREY } from './core/palette'
 
-//#A6ABC8
+//#858a8fff
 const initialTheme = {
   colorSchemes: {
     light: {
@@ -15,10 +15,10 @@ const initialTheme = {
           //primary: { primary: GREY[900], contrastText: "#fff" },
           primary: GREY[900],
           //secondary: GREY[700],
-          secondary: '#A6ABC8',
+          secondary: '#858a8fff',
           disabled: GREY[500],
-          menu: '#A6ABC8',
-          contrastText: '#A6ABC8',
+          menu: '#858a8fff',
+          contrastText: '#858a8fff',
         },
         warning: {
           lighter: '#FFF3BF',
@@ -44,10 +44,10 @@ const initialTheme = {
           contrastText: GREY[100],
         },
         text: {
-          primary: '#C9D1D9',
+          primary: '#858a8fff',
           secondary: GREY[0],
           disabled: GREY[600],
-          menu: '#A6ABC8',
+          menu: '#858a8fff',
           contrastText: GREY[900],
         },
         background: {
