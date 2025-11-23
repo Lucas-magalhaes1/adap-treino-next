@@ -1,8 +1,11 @@
 'use client'
 
 import {
+  Assessment,
+  DarkMode,
   DirectionsRun,
   EmojiPeople,
+  LightMode,
   Logout,
   Person,
   Settings as SettingsIcon,
@@ -19,22 +22,41 @@ import {
   Stack,
   Toolbar,
   Typography,
+  useColorScheme,
 } from '@mui/material'
 import { signOut } from 'next-auth/react'
 import { useState } from 'react'
+import { GoalsReportScreen } from './reports/GoalsReportScreen'
+import { TrainingFrequencyReportScreen } from './reports/TrainingFrequencyReportScreen'
 import { ManageAthleteGroupsScreen } from './settings/ManageAthleteGroupsScreen'
 import { ManageSportsScreen } from './settings/ManageSportsScreen'
 import ManageTrainingModelsScreen from './settings/ManageTrainingModelsScreen'
 import TrainingModelEditor from './settings/TrainingModelEditor'
 
-type SettingsView = 'main' | 'sports' | 'models' | 'groups' | 'model-edit'
+type SettingsView =
+  | 'main'
+  | 'sports'
+  | 'models'
+  | 'groups'
+  | 'model-edit'
+  | 'reports'
+  | 'reports-goals'
+  | 'reports-frequency'
 
 export function SettingsPage() {
   const [currentView, setCurrentView] = useState<SettingsView>('main')
   const [selectedModelId, setSelectedModelId] = useState<number | null>(null)
+  const { mode, setMode } = useColorScheme()
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: '/login' })
+  }
+
+  const handleToggleTheme = () => {
+    const modes = ['light', 'dark'] as const
+    const currentIndex = modes.indexOf(mode as 'light' | 'dark')
+    const nextIndex = (currentIndex + 1) % modes.length
+    setMode(modes[nextIndex])
   }
 
   const menuItems = [
@@ -44,6 +66,13 @@ export function SettingsPage() {
       title: 'Meu Perfil',
       description: 'Editar informações pessoais',
       disabled: true,
+    },
+    {
+      id: 'theme' as const,
+      icon: mode === 'dark' ? <DarkMode fontSize="large" /> : <LightMode fontSize="large" />,
+      title: 'Tema',
+      description: mode === 'dark' ? 'Modo Escuro' : 'Modo Claro',
+      onClick: handleToggleTheme,
     },
     {
       id: 'sports' as const,
@@ -68,10 +97,10 @@ export function SettingsPage() {
     },
     {
       id: 'reports' as const,
-      icon: <SettingsIcon fontSize="large" />,
+      icon: <Assessment fontSize="large" />,
       title: 'Relatórios',
-      description: 'Visualizar relatórios',
-      disabled: true,
+      description: 'Relatório de Metas',
+      onClick: () => setCurrentView('reports'),
     },
   ]
 
@@ -106,12 +135,69 @@ export function SettingsPage() {
                 <Typography variant="h6" sx={{ flex: 1, ml: 2 }}>
                   {currentView === 'sports' && 'Gerenciar Esportes'}
                   {currentView === 'groups' && 'Grupos de Atletas'}
+                  {currentView === 'reports' && 'Relatórios'}
+                  {currentView === 'reports-goals' && 'Relatório de Metas'}
+                  {currentView === 'reports-frequency' && 'Frequência de Treinos'}
                 </Typography>
               </Toolbar>
             </AppBar>
             <Box sx={{ p: 3, pb: 10 }}>
               {currentView === 'sports' && <ManageSportsScreen />}
               {currentView === 'groups' && <ManageAthleteGroupsScreen />}
+              {currentView === 'reports' && (
+                <Stack spacing={2}>
+                  <Card sx={{ borderRadius: 3 }}>
+                    <CardActionArea onClick={() => setCurrentView('reports-goals')} sx={{ p: 2 }}>
+                      <CardContent sx={{ p: 0 }}>
+                        <Stack direction="row" spacing={2} alignItems="center">
+                          <Box sx={{ color: 'text.secondary' }}>
+                            <Assessment fontSize="large" />
+                          </Box>
+                          <Box flex={1}>
+                            <Typography variant="body1" fontWeight={600}>
+                              Relatório de Metas
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              Acompanhe o progresso das metas
+                            </Typography>
+                          </Box>
+                          <Typography variant="h6" color="text.secondary">
+                            ›
+                          </Typography>
+                        </Stack>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+
+                  <Card sx={{ borderRadius: 3 }}>
+                    <CardActionArea
+                      onClick={() => setCurrentView('reports-frequency')}
+                      sx={{ p: 2 }}
+                    >
+                      <CardContent sx={{ p: 0 }}>
+                        <Stack direction="row" spacing={2} alignItems="center">
+                          <Box sx={{ color: 'text.secondary' }}>
+                            <DirectionsRun fontSize="large" />
+                          </Box>
+                          <Box flex={1}>
+                            <Typography variant="body1" fontWeight={600}>
+                              Frequência de Treinos
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              Análise de participação e alertas de evasão
+                            </Typography>
+                          </Box>
+                          <Typography variant="h6" color="text.secondary">
+                            ›
+                          </Typography>
+                        </Stack>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Stack>
+              )}
+              {currentView === 'reports-goals' && <GoalsReportScreen />}
+              {currentView === 'reports-frequency' && <TrainingFrequencyReportScreen />}
             </Box>
           </>
         )}
