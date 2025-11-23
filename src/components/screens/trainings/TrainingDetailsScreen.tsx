@@ -221,7 +221,11 @@ export function TrainingDetailsScreen({ trainingId }: TrainingDetailsScreenProps
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <AppBar position="static" elevation={1}>
         <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={() => router.back()}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={() => router.push('/dashboard/trainings')}
+          >
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -367,7 +371,7 @@ export function TrainingDetailsScreen({ trainingId }: TrainingDetailsScreenProps
             training.data.snapshot.fields.some((f) => f.formType === 'athlete')
 
           if (!hasAthleteData) return null
-
+          console.log({ athleteValues, training })
           return (
             <Card key={participant.id} sx={{ mb: 2 }}>
               <CardContent>
@@ -385,32 +389,23 @@ export function TrainingDetailsScreen({ trainingId }: TrainingDetailsScreenProps
                 {training.data.snapshot.fields
                   .filter((f) => f.formType === 'athlete' && f.parentId === null)
                   .sort((a, b) => a.sortOrder - b.sortOrder)
-                  .map((field) => (
-                    <Box key={field.key} sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
-                        {field.label} {field.isRequired && '*'}
-                      </Typography>
-                      {renderFieldValue(field, athleteValues[field.key])}
-                    </Box>
-                  ))}
+                  .map((field) => {
+                    // Buscar o valor do campo específico deste atleta
+                    const fieldValue = athleteValues[field.key]
+
+                    return (
+                      <Box key={field.key} sx={{ mb: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
+                          {field.label} {field.isRequired && '*'}
+                        </Typography>
+                        {renderFieldValue(field, fieldValue)}
+                      </Box>
+                    )
+                  })}
               </CardContent>
             </Card>
           )
         })}
-
-        {/* Observações */}
-        {training.notes && (
-          <Card>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 1 }}>
-                Observações
-              </Typography>
-              <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-                {training.notes}
-              </Typography>
-            </CardContent>
-          </Card>
-        )}
       </Box>
 
       {/* Dialog de confirmação de exclusão */}

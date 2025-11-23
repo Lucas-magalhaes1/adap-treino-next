@@ -486,6 +486,283 @@ async function main() {
   }
 
   console.log('\n')
+
+  // ==========================================
+  // 6. CRIAR TREINOS HISTÓRICOS
+  // ==========================================
+  console.log('🏋️ Criando treinos históricos (outubro e novembro)...')
+
+  // Buscar modelos de treino
+  const basqueteModel = await prisma.trainingModel.findFirst({
+    where: { name: 'Basquete - Fundamentos Intensivos' },
+    include: { fields: true, sport: true },
+  })
+
+  const discoModel = await prisma.trainingModel.findFirst({
+    where: { name: 'Treino Lançamento de Disco' },
+    include: { fields: true, sport: true },
+  })
+
+  const trainingsData = [
+    {
+      date: new Date('2024-10-05T09:00:00'),
+      model: basqueteModel,
+      athletes: ['Pedro Oliveira', 'Rafael Coutinho'],
+      notes: 'Foco em arremessos de média distância',
+      data: {
+        values: {
+          drills_realizados: ['ball_handling', 'pick_and_roll'],
+          observacoes_gerais: 'Bom aproveitamento geral',
+          intensidade_percebida: 'moderada',
+        },
+        athleteValues: {
+          // Pedro Oliveira
+          series_arremessos_convertidos: 12,
+          porcentagem_lances_livres: 78,
+          intensidade_percebida: 'moderada',
+        },
+      },
+      duration: 5400, // 90 minutos
+    },
+    {
+      date: new Date('2024-10-10T15:30:00'),
+      model: discoModel,
+      athletes: ['Eduardo Lima', 'João Silva'],
+      notes: 'Trabalho técnico de rotação',
+      data: {
+        values: {
+          aquecimento_notas: 'Mobilidade de ombros e quadril',
+          distancia_media: 52.3,
+        },
+        athleteValues: {
+          melhor_marca: 58.7,
+          sensacao_lancamento: 'boa',
+        },
+      },
+      duration: 7200, // 2 horas
+    },
+    {
+      date: new Date('2024-10-15T10:00:00'),
+      model: basqueteModel,
+      athletes: ['Pedro Oliveira', 'Rafael Coutinho', 'Carla Menezes'],
+      notes: 'Treino em grupo - defesa',
+      data: {
+        values: {
+          drills_realizados: ['defesa_pressao', 'pick_and_roll'],
+          observacoes_gerais: 'Boa intensidade defensiva',
+        },
+        athleteValues: {
+          series_arremessos_convertidos: 8,
+          porcentagem_lances_livres: 72,
+          intensidade_percebida: 'alta',
+        },
+      },
+      duration: 6300, // 105 minutos
+    },
+    {
+      date: new Date('2024-10-20T14:00:00'),
+      model: discoModel,
+      athletes: ['Eduardo Lima'],
+      notes: 'Sessão individual focada em explosão',
+      data: {
+        values: {
+          aquecimento_notas: 'Trabalho de pliometria',
+          distancia_media: 55.8,
+        },
+        athleteValues: {
+          melhor_marca: 61.2,
+          sensacao_lancamento: 'excelente',
+        },
+      },
+      duration: 5400,
+    },
+    {
+      date: new Date('2024-10-25T16:00:00'),
+      model: basqueteModel,
+      athletes: ['Rafael Coutinho', 'Carla Menezes'],
+      notes: 'Treino de finalização',
+      data: {
+        values: {
+          drills_realizados: ['ball_handling'],
+          observacoes_gerais: 'Foco em bandejas e finalizações próximas',
+          intensidade_percebida: 'moderada',
+        },
+        athleteValues: {
+          series_arremessos_convertidos: 15,
+          porcentagem_lances_livres: 85,
+        },
+      },
+      duration: 4800,
+    },
+    {
+      date: new Date('2024-11-02T09:30:00'),
+      model: basqueteModel,
+      athletes: ['Pedro Oliveira'],
+      notes: 'Treino individual - arremessos',
+      data: {
+        values: {
+          drills_realizados: ['ball_handling', 'pick_and_roll'],
+          observacoes_gerais: 'Excelente aproveitamento',
+        },
+        athleteValues: {
+          series_arremessos_convertidos: 18,
+          porcentagem_lances_livres: 92,
+          intensidade_percebida: 'alta',
+        },
+      },
+      duration: 4500,
+    },
+    {
+      date: new Date('2024-11-08T15:00:00'),
+      model: discoModel,
+      athletes: ['João Silva', 'Eduardo Lima'],
+      notes: 'Comparativo de técnicas',
+      data: {
+        values: {
+          aquecimento_notas: 'Revisão de fundamentos',
+          distancia_media: 54.5,
+        },
+        athleteValues: {
+          melhor_marca: 59.8,
+          sensacao_lancamento: 'boa',
+        },
+      },
+      duration: 6600,
+    },
+    {
+      date: new Date('2024-11-12T10:30:00'),
+      model: basqueteModel,
+      athletes: ['Rafael Coutinho', 'Pedro Oliveira', 'Carla Menezes'],
+      notes: 'Simulação de jogo',
+      data: {
+        values: {
+          drills_realizados: ['pick_and_roll', 'defesa_pressao'],
+          observacoes_gerais: 'Ótima comunicação em quadra',
+        },
+        athleteValues: {
+          series_arremessos_convertidos: 10,
+          porcentagem_lances_livres: 80,
+          intensidade_percebida: 'alta',
+        },
+      },
+      duration: 7200,
+    },
+    {
+      date: new Date('2024-11-17T14:30:00'),
+      model: discoModel,
+      athletes: ['Eduardo Lima'],
+      notes: 'Preparação para competição',
+      data: {
+        values: {
+          aquecimento_notas: 'Protocolo pré-competição',
+          distancia_media: 57.2,
+        },
+        athleteValues: {
+          melhor_marca: 62.4,
+          sensacao_lancamento: 'excelente',
+        },
+      },
+      duration: 5100,
+    },
+    {
+      date: new Date('2024-11-21T16:00:00'),
+      model: basqueteModel,
+      athletes: ['Pedro Oliveira', 'Rafael Coutinho'],
+      notes: 'Treino de recuperação',
+      data: {
+        values: {
+          drills_realizados: ['ball_handling'],
+          observacoes_gerais: 'Intensidade controlada',
+        },
+        athleteValues: {
+          series_arremessos_convertidos: 7,
+          porcentagem_lances_livres: 75,
+          intensidade_percebida: 'leve',
+        },
+      },
+      duration: 3600,
+    },
+  ]
+
+  for (const trainingData of trainingsData) {
+    if (!trainingData.model) {
+      console.warn(`  ⚠️ Modelo de treino não encontrado. Pulando.`)
+      continue
+    }
+
+    // Verificar se treino já existe (por data e modelo)
+    const existingTraining = await prisma.training.findFirst({
+      where: {
+        date: trainingData.date,
+        modelId: trainingData.model.id,
+      },
+    })
+
+    if (existingTraining) {
+      console.log(`  ✓ Treino em ${trainingData.date.toLocaleDateString('pt-BR')} já existe`)
+      continue
+    }
+
+    // Criar snapshot do modelo
+    const snapshot = {
+      modelId: trainingData.model.id,
+      modelName: trainingData.model.name,
+      sportId: trainingData.model.sportId,
+      sportName: trainingData.model.sport.name,
+      fields: trainingData.model.fields.map((field) => ({
+        id: field.id.toString(),
+        key: field.key,
+        label: field.label,
+        fieldType: field.fieldType,
+        unit: field.unit || undefined,
+        sortOrder: field.sortOrder,
+        parentId: field.parentId?.toString() || null,
+        formType: (field.config as any)?.formType || 'general',
+        isRequired: (field.config as any)?.isRequired || false,
+        config: field.config,
+      })),
+    }
+
+    const endTime = new Date(trainingData.date.getTime() + trainingData.duration * 1000)
+
+    // Criar treino
+    const training = await prisma.training.create({
+      data: {
+        date: trainingData.date,
+        modelId: trainingData.model.id,
+        sportId: trainingData.model.sportId,
+        notes: trainingData.notes,
+        data: {
+          snapshot,
+          startTime: trainingData.date.toISOString(),
+          endTime: endTime.toISOString(),
+          duration: trainingData.duration,
+          values: trainingData.data.values,
+          athleteValues: trainingData.data.athleteValues || {},
+        },
+      },
+    })
+
+    // Adicionar participantes
+    for (const athleteName of trainingData.athletes) {
+      const athlete = athleteMap.get(athleteName)
+      if (athlete) {
+        await prisma.trainingParticipant.create({
+          data: {
+            trainingId: training.id,
+            athleteId: athlete.id,
+            status: 'present',
+          },
+        })
+      }
+    }
+
+    console.log(
+      `  ✓ Treino "${trainingData.model.name}" criado em ${trainingData.date.toLocaleDateString('pt-BR')} com ${trainingData.athletes.length} atleta(s)`
+    )
+  }
+
+  console.log('\n')
 }
 
 main()

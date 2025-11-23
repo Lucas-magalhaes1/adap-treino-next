@@ -214,7 +214,6 @@ export async function updateTrainingData(
 export async function finishTraining(
   id: number,
   values: Record<string, any>,
-  notes?: string,
   customDuration?: number,
   customStartTime?: Date,
   customEndTime?: Date,
@@ -252,7 +251,6 @@ export async function finishTraining(
     data: {
       date: startTime, // Atualizar a data do treino com o horário de início customizado
       data: finalData as any,
-      notes: notes || training.notes,
     },
   })
 
