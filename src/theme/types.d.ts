@@ -39,3 +39,10 @@ declare module '@mui/material/styles' {
     customShadows?: CustomShadowOptions
   }
 }
+
+// Extend Chip variants to include 'soft'
+declare module '@mui/material/Chip' {
+  interface ChipPropsVariantOverrides {
+    soft: true
+  }
+}

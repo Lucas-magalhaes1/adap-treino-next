@@ -93,7 +93,6 @@ const initialTheme = {
 }
 
 const theme = createTheme(initialTheme)
-//const theme = createTheme(initialTheme);
-theme.components = ComponentsOverrides(theme)
+theme.components = ComponentsOverrides(theme) as typeof theme.components
 
 export default theme
