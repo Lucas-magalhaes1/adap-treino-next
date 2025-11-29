@@ -5,34 +5,56 @@ import { athleteServerSchema } from '@/schemas/athleteSchema'
 import { calculateAge } from '@/utils/athleteHelpers'
 import { revalidatePath } from 'next/cache'
 
+// Documentos padrão criados automaticamente para cada atleta
+const DEFAULT_DOCUMENTS = [
+  { title: 'Exame Médico', description: 'Exame médico periódico do atleta' },
+  { title: 'Atestado de Frequência Escolar', description: 'Comprovante de frequência escolar' },
+  { title: 'Laudo Médico', description: 'Laudo médico para prática esportiva' },
+  { title: 'Laudo Psicológico', description: 'Avaliação psicológica do atleta' },
+]
+
 export async function createAthlete(data: unknown) {
   try {
     // Validar dados
     const validated = athleteServerSchema.parse(data)
 
-    // Criar atleta
-    const athlete = await prisma.athlete.create({
-      data: {
-        name: validated.name,
-        gender: validated.gender || null,
-        birthDate: validated.birthDate ? new Date(validated.birthDate) : null,
-        weight: validated.weight,
-        height: validated.height,
-        photo: validated.photo || null,
-        notes: validated.notes || null,
-      },
-    })
+    // Criar atleta com documentos padrão em uma transação
+    const athlete = await prisma.$transaction(async (tx) => {
+      // Criar atleta
+      const newAthlete = await tx.athlete.create({
+        data: {
+          name: validated.name,
+          gender: validated.gender || null,
+          birthDate: validated.birthDate ? new Date(validated.birthDate) : null,
+          weight: validated.weight,
+          height: validated.height,
+          photo: validated.photo || null,
+          notes: validated.notes || null,
+        },
+      })
 
-    // Associar esportes
-    if (validated.sportIds && validated.sportIds.length > 0) {
-      await prisma.athleteSport.createMany({
-        data: validated.sportIds.map((sportId, index) => ({
-          athleteId: athlete.id,
-          sportId,
-          isMain: index === 0, // Primeiro esporte é o principal
+      // Associar esportes
+      if (validated.sportIds && validated.sportIds.length > 0) {
+        await tx.athleteSport.createMany({
+          data: validated.sportIds.map((sportId, index) => ({
+            athleteId: newAthlete.id,
+            sportId,
+            isMain: index === 0,
+          })),
+        })
+      }
+
+      // Criar documentos padrão
+      await tx.athleteDocument.createMany({
+        data: DEFAULT_DOCUMENTS.map((doc) => ({
+          athleteId: newAthlete.id,
+          title: doc.title,
+          description: doc.description,
         })),
       })
-    }
+
+      return newAthlete
+    })
 
     // Revalidar cache
     revalidatePath('/dashboard/athletes')
