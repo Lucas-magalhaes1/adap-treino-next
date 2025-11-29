@@ -1,7 +1,7 @@
 'use client'
 
 import { formatGender, formatHeight, formatWeight } from '@/utils/athleteHelpers'
-import { ArrowBack, Edit, EmojiEvents, Timeline } from '@mui/icons-material'
+import { ArrowBack, Edit, EmojiEvents, FolderOpen, Timeline } from '@mui/icons-material'
 import {
   AppBar,
   Avatar,
@@ -17,6 +17,8 @@ import {
   Typography,
 } from '@mui/material'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { AthleteDocuments } from './AthleteDocuments'
 
 interface AthleteDetailsPageProps {
   athlete: {
@@ -36,6 +38,7 @@ interface AthleteDetailsPageProps {
 
 export function AthleteDetailsPage({ athlete }: AthleteDetailsPageProps) {
   const router = useRouter()
+  const [showDocuments, setShowDocuments] = useState(false)
 
   const formattedBirthDate = athlete.birthDate
     ? new Date(athlete.birthDate).toLocaleDateString('pt-BR')
@@ -157,6 +160,14 @@ export function AthleteDetailsPage({ athlete }: AthleteDetailsPageProps) {
             <Button
               fullWidth
               variant="contained"
+              startIcon={<FolderOpen />}
+              onClick={() => setShowDocuments(true)}
+            >
+              Documentos
+            </Button>
+            <Button
+              fullWidth
+              variant="contained"
               startIcon={<Timeline />}
               onClick={() => router.push(`/dashboard/athletes/${athlete.id}/analytics`)}
             >
@@ -186,6 +197,14 @@ export function AthleteDetailsPage({ athlete }: AthleteDetailsPageProps) {
           )}
         </Stack>
       </Box>
+
+      {/* Modal de Documentos */}
+      <AthleteDocuments
+        athleteId={athlete.id}
+        athleteName={athlete.name}
+        open={showDocuments}
+        onClose={() => setShowDocuments(false)}
+      />
     </Box>
   )
 }

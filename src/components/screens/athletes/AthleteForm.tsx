@@ -24,14 +24,28 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { AthleteDocumentsSection } from './AthleteDocumentsSection'
+
+interface TempDocument {
+  id: string
+  title: string
+  description: string
+  attachments: Array<{
+    id: string
+    file: File
+    preview: string
+    fileType: string
+    fileName: string
+  }>
+}
 
 interface AthleteFormProps {
   athleteId?: number
   initialData?: Partial<AthleteFormData>
   availableSports: Array<{ id: number; name: string }>
-  onSave: (data: AthleteFormData) => Promise<void>
+  onSave: (data: AthleteFormData, documents?: TempDocument[]) => Promise<void>
   onCancel: () => void
 }
 
@@ -45,6 +59,7 @@ export function AthleteForm({
   const isEditing = !!athleteId
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { uploadImage, isUploading: isUploadingImage } = useImageUpload()
+  const [tempDocuments, setTempDocuments] = useState<TempDocument[]>([])
 
   // React Hook Form com Zod
   const {
@@ -94,7 +109,7 @@ export function AthleteForm({
 
   const onSubmit = async (data: AthleteFormData) => {
     try {
-      await onSave(data)
+      await onSave(data, tempDocuments)
     } catch (error) {
       console.error('Erro no formulário:', error)
     }
@@ -345,6 +360,9 @@ export function AthleteForm({
                 />
               )}
             />
+
+            {/* Documentos */}
+            <AthleteDocumentsSection athleteId={athleteId} onChange={setTempDocuments} />
 
             {/* Botões de Ação */}
             <Stack direction="row" spacing={2} sx={{ pt: 2 }}>
