@@ -36,7 +36,7 @@ export interface AthleteFormRef {
 }
 
 export const AthleteForm = forwardRef<AthleteFormRef, AthleteFormProps>(
-  ({ athleteId, athleteName, fields, initialValues, onValuesChange }, ref) => {
+  ({ athleteId, fields, initialValues, onValuesChange }, ref) => {
     const hasInitialized = useRef(false)
 
     const {
