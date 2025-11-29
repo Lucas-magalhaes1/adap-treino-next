@@ -86,6 +86,7 @@ model Athlete {
     sports               AthleteSport[]
     groupMembers         AthleteGroupMember[]
     trainingParticipants TrainingParticipant[]
+    documents            AthleteDocument[]
 
     @@map("athletes")
 }
@@ -309,4 +310,41 @@ model TrainingParticipant {
     athlete  Athlete  @relation(fields: [athleteId], references: [id], onDelete: Cascade)
 
     @@map("training_participants")
+}
+
+// --- Gestão de Documentos de Atletas ---
+
+// Documento do Atleta (Container lógico)
+model AthleteDocument {
+    id          Int       @id @default(autoincrement())
+    athleteId   Int       @map("athlete_id")
+    title       String    @db.VarChar(255)
+    description String?   @db.Text
+    issuedAt    DateTime? @map("issued_at") @db.Date
+    expiresAt   DateTime? @map("expires_at") @db.Date
+    createdAt   DateTime  @default(now()) @map("created_at")
+    updatedAt   DateTime  @updatedAt @map("updated_at")
+
+    athlete     Athlete                     @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+    attachments AthleteDocumentAttachment[]
+
+    @@index([athleteId])
+    @@index([expiresAt])
+    @@map("athlete_documents")
+}
+
+// Anexos/Arquivos (Suporta múltiplas fotos por documento)
+model AthleteDocumentAttachment {
+    id         Int      @id @default(autoincrement())
+    documentId Int      @map("document_id")
+    filePath   String   @map("file_path") @db.VarChar(500)
+    fileType   String   @map("file_type") @db.VarChar(100)
+    fileSize   Int?     @map("file_size")
+    fileName   String?  @map("file_name") @db.VarChar(255)
+    createdAt  DateTime @default(now()) @map("created_at")
+
+    document AthleteDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+    @@index([documentId])
+    @@map("athlete_document_attachments")
 }
