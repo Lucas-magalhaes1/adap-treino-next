@@ -25,7 +25,7 @@ export const { handlers, auth } = NextAuth({
 
         const user = await prisma.user.findUnique({
           where: {
-            email: credentials.email,
+            email: credentials.email as string,
           },
         })
 
@@ -33,7 +33,7 @@ export const { handlers, auth } = NextAuth({
           throw new Error('Credenciais inválidas')
         }
 
-        const isPasswordValid = bcrypt.compare(credentials.password, user.password)
+        const isPasswordValid = await bcrypt.compare(credentials.password as string, user.password)
 
         if (!isPasswordValid) {
           throw new Error('Credenciais inválidas')
