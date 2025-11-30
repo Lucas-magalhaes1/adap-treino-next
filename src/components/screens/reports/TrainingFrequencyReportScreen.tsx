@@ -1,7 +1,7 @@
 'use client'
 
 import { getTrainingFrequencyReport } from '@/actions/reports'
-import { exportComponentToPDF } from '@/utils/exportPDF'
+import { exportFrequencyReportToPDF } from '@/utils/exportPDF'
 import {
   PictureAsPdf as PictureAsPdfIcon,
   TrendingDown as TrendingDownIcon,
@@ -27,10 +27,11 @@ import {
   TextField,
   Toolbar,
   Typography,
+  useColorScheme,
 } from '@mui/material'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Bar,
   BarChart,
@@ -62,12 +63,13 @@ interface TrainingFrequencyReportScreenProps {
   onBack?: () => void
 }
 
-export function TrainingFrequencyReportScreen({ onBack }: TrainingFrequencyReportScreenProps) {
+export function TrainingFrequencyReportScreen({}: TrainingFrequencyReportScreenProps) {
   const [isExporting, setIsExporting] = useState(false)
   const [selectedSportId, setSelectedSportId] = useState<number | null>(null)
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+  const { mode, setMode } = useColorScheme()
 
   const { data: groups } = useSWR('athlete-groups', fetchAthleteGroups)
   const { data: sports } = useSWR('sports', fetchSports)
@@ -83,33 +85,26 @@ export function TrainingFrequencyReportScreen({ onBack }: TrainingFrequencyRepor
       })
   )
 
-  const handleExportPDF = async () => {
+  useEffect(() => {
+    if (mode !== 'light') {
+      setMode('light')
+    }
+  }, [mode, setMode])
+
+  const handleExportPDF = () => {
+    if (!reportData) {
+      alert('Não há dados para exportar')
+      return
+    }
+
     setIsExporting(true)
+
     try {
-      // Adiciona classe temporária para forçar cores sólidas
-      const element = document.getElementById('frequency-report-content')
-      if (element) {
-        element.classList.add('pdf-export-mode')
-      }
-
-      // Pequeno delay para garantir que os estilos sejam aplicados
-      await new Promise((resolve) => setTimeout(resolve, 100))
-
       const filename = `relatorio-frequencia-${format(new Date(), 'dd-MM-yyyy')}.pdf`
-      await exportComponentToPDF('frequency-report-content', filename)
-
-      // Remove a classe após a exportação
-      if (element) {
-        element.classList.remove('pdf-export-mode')
-      }
+      exportFrequencyReportToPDF(reportData, filename)
     } catch (error) {
       console.error('Erro ao exportar PDF:', error)
       alert('Erro ao exportar PDF. Tente novamente.')
-      // Garante que a classe seja removida mesmo em caso de erro
-      const element = document.getElementById('frequency-report-content')
-      if (element) {
-        element.classList.remove('pdf-export-mode')
-      }
     } finally {
       setIsExporting(false)
     }

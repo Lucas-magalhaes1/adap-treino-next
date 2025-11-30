@@ -1,7 +1,7 @@
 'use client'
 
 import { getGoalsReport } from '@/actions/reports'
-import { exportComponentToPDF } from '@/utils/exportPDF'
+import { exportGoalsReportToPDF } from '@/utils/exportPDF'
 import {
   ArrowBack as ArrowBackIcon,
   CheckCircle,
@@ -32,10 +32,11 @@ import {
   TextField,
   Toolbar,
   Typography,
+  useColorScheme,
 } from '@mui/material'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import useSWR from 'swr'
 
@@ -68,6 +69,13 @@ export function GoalsReportScreen({ onBack }: GoalsReportScreenProps) {
   const [selectedStatus, setSelectedStatus] = useState<string>('all')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+  const { mode, setMode } = useColorScheme()
+
+  useEffect(() => {
+    if (mode !== 'light') {
+      setMode('light')
+    }
+  }, [mode, setMode])
 
   const { data: athletes } = useSWR('athletes', fetchAthletes)
 
@@ -82,33 +90,20 @@ export function GoalsReportScreen({ onBack }: GoalsReportScreenProps) {
       })
   )
 
-  const handleExportPDF = async () => {
+  const handleExportPDF = () => {
+    if (!reportData) {
+      alert('Não há dados para exportar')
+      return
+    }
+
     setIsExporting(true)
+
     try {
-      // Adiciona classe temporária para forçar cores sólidas
-      const element = document.getElementById('goals-report-content')
-      if (element) {
-        element.classList.add('pdf-export-mode')
-      }
-
-      // Pequeno delay para garantir que os estilos sejam aplicados
-      await new Promise((resolve) => setTimeout(resolve, 100))
-
       const filename = `relatorio-metas-${format(new Date(), 'dd-MM-yyyy')}.pdf`
-      await exportComponentToPDF('goals-report-content', filename)
-
-      // Remove a classe após a exportação
-      if (element) {
-        element.classList.remove('pdf-export-mode')
-      }
+      exportGoalsReportToPDF(reportData, filename)
     } catch (error) {
       console.error('Erro ao exportar PDF:', error)
       alert('Erro ao exportar PDF. Tente novamente.')
-      // Garante que a classe seja removida mesmo em caso de erro
-      const element = document.getElementById('goals-report-content')
-      if (element) {
-        element.classList.remove('pdf-export-mode')
-      }
     } finally {
       setIsExporting(false)
     }
