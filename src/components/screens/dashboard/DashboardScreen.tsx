@@ -27,7 +27,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { differenceInDays, endOfWeek, format, isThisWeek, startOfWeek } from 'date-fns'
+import { differenceInDays, format, isThisWeek } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useRouter } from 'next/navigation'
 import useSWR from 'swr'
@@ -50,7 +50,6 @@ export function DashboardScreen() {
   // Estatísticas gerais
   const totalTrainings = trainings?.length || 0
   const completedTrainings = trainings?.filter((t) => t.status === 'completed').length || 0
-  const activeTrainings = trainings?.filter((t) => t.status === 'active').length || 0
 
   // Duração total dos treinos completados (em minutos)
   const totalDuration =
@@ -61,10 +60,6 @@ export function DashboardScreen() {
   const recentRecords = allPersonalRecords
     ?.sort((a, b) => new Date(b.dateAchieved).getTime() - new Date(a.dateAchieved).getTime())
     .slice(0, 5)
-
-  // Próximos treinos da semana
-  const weekStart = startOfWeek(new Date(), { locale: ptBR })
-  const weekEnd = endOfWeek(new Date(), { locale: ptBR })
 
   return (
     <Box sx={{ p: 2, pb: 10 }}>
