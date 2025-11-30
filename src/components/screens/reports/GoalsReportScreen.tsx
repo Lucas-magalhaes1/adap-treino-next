@@ -32,11 +32,10 @@ import {
   TextField,
   Toolbar,
   Typography,
-  useColorScheme,
 } from '@mui/material'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import useSWR from 'swr'
 
@@ -69,13 +68,6 @@ export function GoalsReportScreen({ onBack }: GoalsReportScreenProps) {
   const [selectedStatus, setSelectedStatus] = useState<string>('all')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-  const { mode, setMode } = useColorScheme()
-
-  useEffect(() => {
-    if (mode !== 'light') {
-      setMode('light')
-    }
-  }, [mode, setMode])
 
   const { data: athletes } = useSWR('athletes', fetchAthletes)
 

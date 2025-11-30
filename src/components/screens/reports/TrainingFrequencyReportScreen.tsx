@@ -27,11 +27,10 @@ import {
   TextField,
   Toolbar,
   Typography,
-  useColorScheme,
 } from '@mui/material'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   Bar,
   BarChart,
@@ -69,7 +68,6 @@ export function TrainingFrequencyReportScreen({}: TrainingFrequencyReportScreenP
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-  const { mode, setMode } = useColorScheme()
 
   const { data: groups } = useSWR('athlete-groups', fetchAthleteGroups)
   const { data: sports } = useSWR('sports', fetchSports)
@@ -84,12 +82,6 @@ export function TrainingFrequencyReportScreen({}: TrainingFrequencyReportScreenP
         endDate: endDate || undefined,
       })
   )
-
-  useEffect(() => {
-    if (mode !== 'light') {
-      setMode('light')
-    }
-  }, [mode, setMode])
 
   const handleExportPDF = () => {
     if (!reportData) {
