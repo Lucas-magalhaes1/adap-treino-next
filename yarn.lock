@@ -2116,11 +2116,6 @@ dom-helpers@^5.0.1:
     "@babel/runtime" "^7.8.7"
     csstype "^3.0.2"
 
-dom-to-image-more@^3.7.2:
-  version "3.7.2"
-  resolved "https://registry.yarnpkg.com/dom-to-image-more/-/dom-to-image-more-3.7.2.tgz#15afae48b771c63f0b066f7c0c48900506fb5a7e"
-  integrity sha512-uQf+pHv6eQhgfI8t2bFuinV0KsPyT8TZgCLwcSU8uBVgN9v6leb0mMpvp6HQAlAcplP3NCcGjxbdqef6pTzvmw==
-
 dompurify@^3.2.4:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.3.0.tgz#aaaadbb83d87e1c2fbb066452416359e5b62ec97"
@@ -3842,10 +3837,10 @@ react-transition-group@^4.4.5:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react@19.2.0:
-  version "19.2.0"
-  resolved "https://registry.yarnpkg.com/react/-/react-19.2.0.tgz#d33dd1721698f4376ae57a54098cb47fc75d93a5"
-  integrity sha512-tmbWg6W31tQLeB5cdIBOicJDJRR2KzXsV7uSK9iNfLWQ5bIZfxuPEHp7M8wiHyHnn0DD1i7w3Zmin0FtkrwoCQ==
+react@^19.2.1:
+  version "19.2.1"
+  resolved "https://registry.yarnpkg.com/react/-/react-19.2.1.tgz#8600fa205e58e2e807f6ef431c9f6492591a2700"
+  integrity sha512-DGrYcCWK7tvYMnWh79yrPHt+vdx9tY+1gPZa7nJQtO/p8bLTDaHp4dzwEhQB7pZ4Xe3ok4XKuEPrVuc+wlpkmw==
 
 readdirp@^4.0.1:
   version "4.1.2"
